@@ -1,115 +1,110 @@
-﻿#include <iostream>
-#include <fstream>
-#include <iomanip>
-#include <string>
+﻿#include <fstream>
+#include <vector>
+#include <queue>
 
 using namespace std;
 
-const unsigned int n = 303;
-int arr[n][n];
+struct Position {
+    int i, j;
+};
 
+const int di[] = {2, 1, -1, -2, -2, -1, 1, 2};
+const int dj[] = {1, 2, 2, 1, -1, -2, -2, -1};
 
-void wave(int i, int j, int step) {
-	if (arr[i][j] == 0) {
-		int nextStep = step + 1;
-		arr[i][j] = step;
-		if (arr[i - 2][j + 1] == 0) {
-			arr[i - 2][j + 1] = nextStep;
-		}
-		if (arr[i - 2][j - 1] == 0) {
-			arr[i - 2][j - 1] = nextStep;
-		}
-		if (arr[i - 1][j + 2] == 0) {
-			arr[i - 1][j + 2] = nextStep;
-		}
-		if (arr[i - 1][j - 2] == 0) {
-			arr[i - 1][j - 2] = nextStep;
-		}
-		if (arr[i + 1][j + 2] == 0) {
-			arr[i + 1][j + 2] = nextStep;
-		}
-		if (arr[i + 1][j - 2] == 0) {
-			arr[i + 1][j - 2] = nextStep;
-		}
-		if (arr[i + 2][j + 1] == 0) {
-			arr[i + 2][j + 1] = nextStep;
-		}
-		if (arr[i + 2][j - 1] == 0) {
-			arr[i + 2][j - 1] = nextStep;
-		}
-	}
-}
+int main() {
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
 
-int main()
-{
-	// под конец сделат вывод в файл
+    int n;
+    fin >> n;
+    vector <string> a;
+    a.reserve(n);
+    for (int i = 0; i < n; i++) {
+        string s;
+        fin >> s;
+        a.push_back(s);
+    }
 
-	ifstream in("input1.txt");
+    Position start;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (a[i][j] == '@') {
+                start = {i, j};
+            }
+        }
+    }
 
-	int N = 0;
-	int i, j;
-	char val = ' ';
+    vector <vector<int>> dist(n, vector<int>(n, 300 * 300));
+    vector <vector<char>> inQ(n, vector<char>(n, false));
 
-	in >> N;
+    queue <Position> q;
+    q.push(start);
+    dist[start.i][start.j] = 0;
+    inQ[start.i][start.j] = true;
 
-	cout << N;
-	cout << endl;
-	/*
-	for (i = 0; i < N + 1; i++) {
-		arr[i][0] = 1;
-		arr[i][1] = 1;
-		arr[i][N + 1] = 1;
-		arr[i][N + 2] = 1;
+    while (!q.empty()) {
+        Position pos = q.front();
+        q.pop();
+        inQ[pos.i][pos.j] = false;
 
-		arr[0][i] = 1;
-		arr[1][i] = 1;
-		arr[N + 1][i] = 1;
-		arr[N + 2][i] = 1;
-	}
-	*/
+        for (int d = 0; d < 8; d++) {
+            Position pos2 = pos;
+            pos2.i += di[d];
+            pos2.j += dj[d];
+            if (pos2.i < 0 || pos2.j < 0 || pos2.i >= n || pos2.j >= n) {
+                continue;
+            }
+            if (a[pos2.i][pos2.j] == '#') {
+                continue;
+            }
 
-	for (i = 2; i < N + 1; i++) {
-		for (j = 2; j < N + 1; j++) {
-			in >> val;
-			if (val == '@') {
-				arr[i][j] = 2;
-			}
-			if (val == '.') {
-				arr[i][j] = 0;
-			}
+            int dist2 = dist[pos.i][pos.j] + 1;
+            if (dist2 < dist[pos2.i][pos2.j]) {
+                dist[pos2.i][pos2.j] = dist2;
 
-			cout << arr[i, j];
-		}
-		cout << endl;
-	}
+                if (!inQ[pos2.i][pos2.j]) {
+                    q.push(pos2);
+                    inQ[pos2.i][pos2.j] = true;
+                }
+            }
+        }
+    }
 
-	
-	/*
-	for (i = 0; i < N + 3; i++) {
-		for (j = 0; j < N + 3; j++) {
-			cout << arr[i, j];
-		}
+    Position finish;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (a[i][j] == '@' && dist[i][j] != 0) {
+                finish = {i, j};
+            }
+        }
+    }
 
-		cout << endl;
-	}
-	*/
-	/*
-	cout << endl;
+    if (dist[finish.i][finish.j] == 300 * 300) {
+        fout << "Impossible\n";
+        return 0;
+    }
 
-	int grad = 0;
+    Position pos = finish;
 
-	for (i = 1; i < N + 1; i++) {
-		for (j = 1; j < M + 1; j++) {
-			if (arr[i][j] == 1) {
-				grad++;
-			}
-			volna(i, j);
-		}
-	}
+    for (int i = dist[finish.i][finish.j]; i > 0; i--) {
+        a[pos.i][pos.j] = '@';
 
-	cout << grad << endl;*/
+        for (int d = 0; d < 8; d++) {
+            Position pos2 = pos;
+            pos2.i += di[d];
+            pos2.j += dj[d];
+            if (pos2.i < 0 || pos2.j < 0 || pos2.i >= n || pos2.j >= n) {
+                continue;
+            }
 
-	in.close();
+            if (dist[pos2.i][pos2.j] == dist[pos.i][pos.j] - 1) {
+                pos = pos2;
+                break;
+            }
+        }
+    }
 
-	return 0;
+    for (int i = 0; i < n; i++) {
+        fout << a[i] << endl;
+    }
 }

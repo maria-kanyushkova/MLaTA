@@ -36,34 +36,29 @@ struct segment {
     long long a, b;
 };
 
-istream &operator>>(istream &in, rectangle &rect) {
-    in >> rect.x1 >> rect.y1 >> rect.x2 >> rect.y2;
-    return in;
-}
-
 int main() {
-    ifstream input("input1.txt");
-    ofstream output("output.txt");
-    int count;
-    input >> count;
+    ifstream inFile("input.txt");
+    ofstream outFile("output.txt");
+    int count, x1, y1, x2, y2;
     vector <rectangle> rects;
+	inFile >> count;
     while (count-- > 0) {
-        rects.push_back(rectangle{});
-        input >> rects.back();
+		inFile >> x1 >> y1 >> x2 >> y2;
+		rects.push_back({ x1, y1, x2, y2});
     }
 
-    vector<long long> x_events;
+    vector<long long> eventsArray;
     for (auto &rect : rects) {
-        x_events.push_back(rect.x1);
-        x_events.push_back(rect.x2);
+		eventsArray.push_back(rect.x1);
+		eventsArray.push_back(rect.x2);
     }
-    sort(x_events.begin(), x_events.end());
-    const auto it = unique(x_events.begin(), x_events.end());
-    x_events.resize(distance(x_events.begin(), it));
+    sort(eventsArray.begin(), eventsArray.end());
+    const auto it = unique(eventsArray.begin(), eventsArray.end());
+	eventsArray.resize(distance(eventsArray.begin(), it));
 
     long long area = 0;
-    for (size_t i = 0; i < x_events.size() - 1; ++i) {
-        const auto x = x_events[i];
+    for (size_t i = 0; i < eventsArray.size() - 1; ++i) {
+        const auto x = eventsArray[i];
         deque<long long> start, end;
         for (auto &rect : rects) {
             if (rect.x1 <= x && rect.x2 > x) {
@@ -97,10 +92,10 @@ int main() {
             }
         }
 
-        const auto width = x_events[i + 1] - x;
+        const auto width = eventsArray[i + 1] - x;
         for (auto &segment : segments) {
             area += width * (segment.b - segment.a);
         }
     }
-    output << area << endl;
+	outFile << area << endl;
 }

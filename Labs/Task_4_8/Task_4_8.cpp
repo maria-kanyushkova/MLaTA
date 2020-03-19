@@ -66,72 +66,51 @@ const auto MAX_N = 100000;
 const auto MIN_N = 2;
 const auto MAX_BOOLEAN_LENGTH = 4;
 
-int to_int(const char ch) {
-    return ch - '0';
-}
-
-template<typename T>
-void write(T message, const string &path) {
-    ofstream outfile(path);
-    outfile << message;
-    outfile.close();
-}
-
 int main() {
-    try {
-        ifstream input("input1.txt");
-        auto N = 0;
-        input >> N;
-        if (N < MIN_N || N > MAX_N) {
-            throw invalid_argument(
-                    "Argument is outside the range [" + to_string(MIN_N) + ";" + to_string(MAX_N) + "]!");
-        }
-        string boolean;
-        input >> boolean;
-        if (boolean.empty()) {
-            throw invalid_argument("Empty boolean description!");
-        }
-        if (boolean.length() > MAX_BOOLEAN_LENGTH) {
-            throw invalid_argument("Descriptions must be 4 letters string!");
-        }
-        vector<vector<int>> dynamics(MAX_N, vector<int>(MIN_N));
-        vector<vector<int>> methods(MAX_N, vector<int>(MIN_N));
-        vector<vector<int>> results(MAX_N, vector<int>(MIN_N));
-        dynamics[1][0] = 0;
-        dynamics[1][1] = 1;
-        results[1][0] = 0;
-        results[1][1] = 1;
-        for (auto i = MIN_N; i <= N; ++i) {
-            dynamics[i][0] = -1;
-            dynamics[i][1] = -1;
-            for (auto j = 0; j <= 1; ++j) {
-                for (auto k = 0; k <= 1; ++k) {
-                    const auto b = to_int(boolean[j * 2 + k]);
-                    if ((dynamics[i - 1][j] >= 0) && (dynamics[i][b] < dynamics[i - 1][j] + k)) {
-                        dynamics[i][b] = dynamics[i - 1][j] + k;
-                        methods[i][b] = j;
-                        results[i][b] = k;
-                    }
+    ifstream inFile("input.txt");
+	ofstream outFile("output.txt");
+    int N = 0;
+    string boolean;
+	inFile >> N;
+	inFile >> boolean;
+
+    vector<vector<int>> dynamicsArray(MAX_N, vector<int>(MIN_N));
+    vector<vector<int>> methodsArray(MAX_N, vector<int>(MIN_N));
+    vector<vector<int>> resultsArray(MAX_N, vector<int>(MIN_N));
+
+    dynamicsArray[1][0] = 0;
+    dynamicsArray[1][1] = 1;
+    resultsArray[1][0] = 0;
+    resultsArray[1][1] = 1;
+    for (auto i = MIN_N; i <= N; ++i) {
+        dynamicsArray[i][0] = -1;
+        dynamicsArray[i][1] = -1;
+        for (auto j = 0; j <= 1; ++j) {
+            for (auto k = 0; k <= 1; ++k) {
+                const auto b = boolean[j * 2 + k] - '0';
+                if ((dynamicsArray[i - 1][j] >= 0) && (dynamicsArray[i][b] < dynamicsArray[i - 1][j] + k)) {
+                    dynamicsArray[i][b] = dynamicsArray[i - 1][j] + k;
+                    methodsArray[i][b] = j;
+                    resultsArray[i][b] = k;
                 }
             }
         }
-        if (dynamics[N][1] < 0) {
-            write("No", "output.txt");
-            return EXIT_SUCCESS;
-        }
-        vector<int> buffer(MAX_N, 0);
-        auto j = 1;
-        for (auto i = N; i >= 1; --i) {
-            buffer[i] = results[i][j];
-            j = methods[i][j];
-        }
-        string message;
-        for (auto i = 1; i <= N; ++i) {
-            message += to_string(buffer[i]);
-        }
-        write(message, "output.txt");
     }
-    catch (exception &ex) {
-        cerr << ex.what() << endl;
+
+    if (dynamicsArray[N][1] < 0) {
+		outFile << "No";
+        return EXIT_SUCCESS;
     }
+
+    vector<int> buffer(MAX_N, 0);
+    auto j = 1;
+    for (auto i = N; i >= 1; --i) {
+        buffer[i] = resultsArray[i][j];
+        j = methodsArray[i][j];
+    }
+    string message;
+    for (auto i = 1; i <= N; ++i) {
+        message += to_string(buffer[i]);
+    }
+	outFile << message;
 }

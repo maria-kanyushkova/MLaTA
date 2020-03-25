@@ -1,4 +1,5 @@
 .vs
+.idea
 
 Practice/Task-1-garden/.vs
 Practice/Task-1-garden/Debug
@@ -20,7 +21,10 @@ Practice/Task-5-road-repair/.vs
 Practice/Task-5-road-repair/Debug
 Practice/Task-5-road-repair/*.user
 
-Labs/.idea
+Practice/Task-6-lefts/.vs
+Practice/Task-6-lefts/Debug
+Practice/Task-6-lefts/*.user
+
 
 Labs/Task_1_4/.vs
 Labs/Task_1_4/Debug
@@ -41,3 +45,7 @@ Labs/Task_7_3/*.user
 Labs/Task_8_3/.vs
 Labs/Task_8_3/Debug
 Labs/Task_8_3/*.user
+
+Labs/Task_11_9/.vs
+Labs/Task_11_9/Debug
+Labs/Task_11_9/*.user

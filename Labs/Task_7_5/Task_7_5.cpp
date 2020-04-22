@@ -25,6 +25,8 @@ Visual Studio 2019
 
 using namespace std;
 
+const double EPS = 1e-6;
+
 enum AnimalType {
 	Wolf,
 	Sheep,
@@ -84,8 +86,7 @@ int main() {
 
 	// сортируем точки по возрастанию угла
 	sort(p.begin(), p.end(), [](Point a, Point b) {
-		const double eps = 1e-6;
-		if (abs(a.a - b.a) < eps) {
+		if (abs(a.a - b.a) < EPS) {
 			return a.pt == Left && b.pt == Right;
 		}
 		return a.a < b.a;
@@ -109,8 +110,8 @@ int main() {
 			if (sheepCount > 0) {
 				// если мешают овцы, то стреляем левее и ищем волков, в которых не можем попасть
 				for (int j : wolfsToShoot) {
-					if (wolfs[j].l.a > sheepL) {
-						if (wolfs[j].r.a < sheepR) {
+					if (wolfs[j].l.a > sheepL - EPS) {
+						if (wolfs[j].r.a < sheepR + EPS) {
 							// случай, когда в волка невозможно выстрелить, не попав в овцу
 							fout << "No solution\n";
 							return 0;

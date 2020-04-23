@@ -66,6 +66,14 @@ bool coprime(long a, long b) {
 	return a == 1;
 }
 
+long long pow(long x, long n) {
+	long long res = 1;
+	for (int i = 0; i < n; i++) {
+		res *= x;
+	}
+	return res;
+}
+
 long add(long long p, long k, long prev);
 
 // пытаемся домножить последнее число
@@ -74,6 +82,9 @@ long add(long long p, long k, long prev);
 // i - индекс делителя, с которого начинать перебор
 long mul(long x, long long p, long k, long prev, long i) {
 	if (p > n) {
+		return 0;
+	}
+	if (p * pow(x, k - 1) > n) {
 		return 0;
 	}
 
@@ -85,6 +96,9 @@ long mul(long x, long long p, long k, long prev, long i) {
 
 		long x2 = x * d[i];
 		if (n % x2 != 0) {
+			continue;
+		}
+		if (p * pow(x2, k - 1) > n) {
 			continue;
 		}
 
@@ -130,7 +144,7 @@ long solve(long n, long k) {
 }
 
 int main() {
-	ifstream fin("input1.txt");
+	ifstream fin("input.txt");
 	ofstream fout("output.txt");
 
 	long k;

@@ -66,13 +66,13 @@ bool coprime(long a, long b) {
 	return a == 1;
 }
 
-long add(long n, long k, long prev);
+long add(long long p, long k, long prev);
 
 // пытаемся домножить последнее число
 // p - произведение чисел
 // prev - предыдущее число в наборе
 // i - индекс делителя, с которого начинать перебор
-long mul(long x, long p, long k, long prev, long i) {
+long mul(long x, long long p, long k, long prev, long i) {
 	if (p > n) {
 		return 0;
 	}
@@ -100,7 +100,7 @@ long mul(long x, long p, long k, long prev, long i) {
 // пытаемся добавить число в набор
 // p - произведение чисел
 // prev - предыдущее число в наборе
-long add(long p, long k, long prev) {
+long add(long long p, long k, long prev) {
 	if (p > n) {
 		return 0;
 	}
@@ -130,7 +130,7 @@ long solve(long n, long k) {
 }
 
 int main() {
-	ifstream fin("input.txt");
+	ifstream fin("input1.txt");
 	ofstream fout("output.txt");
 
 	long k;

@@ -21,7 +21,6 @@
 Канюшкова Мария ПС-21
 Visual Studio 2019
 */
-
 #include <fstream>
 #include <vector>
 #include <algorithm>
@@ -30,13 +29,10 @@ using namespace std;
 
 // Дерево отрезков
 struct SegmentTree {
-	vector<int> data;
+	vector<long long> data;
 	int n;
 
-	SegmentTree(int n)
-		: data(4 * n, 0)
-		, n(n)
-	{}
+	SegmentTree(int n): data(4 * n, 0), n(n){}
 
 	void add(int l, int r, int d, int i, int tl, int tr) {
 		if (l > tr || tl > r) {
@@ -57,7 +53,7 @@ struct SegmentTree {
 		return add(l, r, d, 0, 0, n - 1);
 	}
 
-	int rsq(int l, int r, int i, int tl, int tr) {
+	long long rsq(int l, int r, int i, int tl, int tr) {
 		if (l > tr || tl > r) {
 			return 0;
 		}
@@ -67,14 +63,14 @@ struct SegmentTree {
 
 		int tm = (tl + tr) / 2;
 
-		int sum = data[i] * (min(r, tr) - max(l, tl) + 1);
+		long long sum = data[i] * (min(r, tr) - max(l, tl) + 1);
 		sum += rsq(l, r, 2 * i + 1, tl, tm);
 		sum += rsq(l, r, 2 * i + 2, tm + 1, tr);
 		return sum;
 	}
 
 	// Сумма на отрезке
-	int rsq(int l, int r) {
+	long long rsq(int l, int r) {
 		return rsq(l, r, 0, 0, n - 1);
 	}
 };

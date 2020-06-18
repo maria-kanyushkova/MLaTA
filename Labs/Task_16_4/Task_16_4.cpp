@@ -21,6 +21,7 @@
 Канюшкова Мария ПС-21
 Visual Studio 2019
 */
+
 #include <fstream>
 #include <vector>
 #include <algorithm>
@@ -29,23 +30,34 @@ using namespace std;
 
 // Дерево отрезков
 struct SegmentTree {
-	vector<long long> data;
+	vector<long long> diff;
+	vector<long long> sum;
 	int n;
 
-	SegmentTree(int n): data(4 * n, 0), n(n){}
+	SegmentTree(int n)
+		: diff(4 * n, 0)
+		, sum(4 * n, 0)
+		, n(n)
+	{}
 
 	void add(int l, int r, int d, int i, int tl, int tr) {
-		if (l > tr || tl > r) {
-			return;
-		}
+		sum[i] += d * (r - l + 1);
 		if (l == tl && r == tr) {
-			data[i] += d;
+			diff[i] += d;
 			return;
 		}
 
 		int tm = (tl + tr) / 2;
-		add(l, min(r, tm), d, 2 * i + 1, tl, tm);
-		add(max(l, tm + 1), r, d, 2 * i + 2, tm + 1, tr);
+		if (r <= tm) {
+			add(l, r, d, 2 * i + 1, tl, tm);
+		}
+		else if (l > tm) {
+			add(l, r, d, 2 * i + 2, tm + 1, tr);
+		}
+		else {
+			add(l, tm, d, 2 * i + 1, tl, tm);
+			add(tm + 1, r, d, 2 * i + 2, tm + 1, tr);
+		}
 	}
 
 	// Добавление на отрезке
@@ -54,18 +66,22 @@ struct SegmentTree {
 	}
 
 	long long rsq(int l, int r, int i, int tl, int tr) {
-		if (l > tr || tl > r) {
-			return 0;
-		}
-		if (tl == tr) {
-			return data[i];
+		if (l == tl && r == tr) {
+			return sum[i];
 		}
 
 		int tm = (tl + tr) / 2;
-
-		long long sum = data[i] * (min(r, tr) - max(l, tl) + 1);
-		sum += rsq(l, r, 2 * i + 1, tl, tm);
-		sum += rsq(l, r, 2 * i + 2, tm + 1, tr);
+		long long sum = diff[i] * (r - l + 1);
+		if (r <= tm) {
+			sum += rsq(l, r, 2 * i + 1, tl, tm);
+		}
+		else if (l > tm) {
+			sum += rsq(l, r, 2 * i + 2, tm + 1, tr);
+		}
+		else {
+			sum += rsq(l, tm, 2 * i + 1, tl, tm);
+			sum += rsq(tm + 1, r, 2 * i + 2, tm + 1, tr);
+		}
 		return sum;
 	}
 
